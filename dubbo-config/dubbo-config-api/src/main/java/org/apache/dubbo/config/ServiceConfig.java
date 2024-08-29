@@ -203,6 +203,9 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
         dispatch(new ServiceConfigUnexportedEvent(this));
     }
 
+    /**
+     * 服务导出
+     */
     @Override
     public synchronized void export() {
         if (bootstrap == null) {
@@ -220,11 +223,11 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
         serviceMetadata.setServiceType(getInterfaceClass());
         serviceMetadata.setTarget(getRef());
         serviceMetadata.generateServiceKey();
-
+        //是否不导出服务
         if (!shouldExport()) {
             return;
         }
-
+        //是否延时导出
         if (shouldDelay()) {
             DELAY_EXPORT_EXECUTOR.schedule(() -> {
                 try {
@@ -255,8 +258,12 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
         dispatch(new ServiceConfigExportedEvent(this));
     }
 
+    /**
+     * 检查更新配置
+     */
     private void checkAndUpdateSubConfigs() {
         // Use default configs defined explicitly with global scope
+
         completeCompoundConfigs();
         checkDefault();
         checkProtocol();
@@ -269,6 +276,7 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
         if (!isOnlyInJvm()) {
             checkRegistry();
         }
+        //刷新
         this.refresh();
 
         if (StringUtils.isEmpty(interfaceName)) {
@@ -298,19 +306,24 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
         postProcessConfig();
     }
 
-
+    /**
+     * 导出服务
+     */
     protected synchronized void doExport() {
         if (unexported) {
             throw new IllegalStateException("The service " + interfaceClass.getName() + " has already unexported!");
         }
+        //已经导出，不需要再次导出
         if (exported) {
             return;
         }
+
         exported = true;
 
         if (StringUtils.isEmpty(path)) {
             path = interfaceName;
         }
+
         doExportUrls();
         bootstrap.setReady(true);
     }
@@ -327,8 +340,9 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
                 serviceMetadata
         );
 
+        //获取配置的注册中心
         List<URL> registryURLs = ConfigValidationUtils.loadRegistries(this, true);
-
+        //协议数
         int protocolConfigNum = protocols.size();
         for (ProtocolConfig protocolConfig : protocols) {
             String pathKey = URL.buildKey(getContextPath(protocolConfig)
@@ -336,12 +350,20 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
                     .orElse(path), group, version);
             // In case user specified path, register service one more time to map it to path.
             repository.registerService(pathKey, interfaceClass);
+            //导出服务
             doExportUrlsFor1Protocol(protocolConfig, registryURLs, protocolConfigNum);
         }
     }
 
+    /**
+     * 导出服务
+     * @param protocolConfig 协议配置
+     * @param registryURLs 注册中心url
+     * @param protocolConfigNum 协议数
+     */
     private void doExportUrlsFor1Protocol(ProtocolConfig protocolConfig, List<URL> registryURLs, int protocolConfigNum) {
         String name = protocolConfig.getName();
+        //默认为dubbo
         if (StringUtils.isEmpty(name)) {
             name = DUBBO;
         }
@@ -477,6 +499,7 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
 
             // export to local if the config is not remote (export to remote only when config is remote)
             if (!SCOPE_REMOTE.equalsIgnoreCase(scope)) {
+                //导出本地
                 exportLocal(url);
             }
             // export to remote if the config is not local (export to local only when config is local)
@@ -510,6 +533,7 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
                         if (StringUtils.isNotEmpty(proxy)) {
                             registryURL = registryURL.addParameter(PROXY_KEY, proxy);
                         }
+
 
                         Invoker<?> invoker = PROXY_FACTORY.getInvoker(ref, (Class) interfaceClass,
                                 registryURL.addParameterAndEncoded(EXPORT_KEY, url.toFullString()));

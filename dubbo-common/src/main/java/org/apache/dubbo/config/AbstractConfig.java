@@ -468,8 +468,10 @@ public abstract class AbstractConfig implements Serializable {
     }
 
     public void refresh() {
+
         Environment env = ApplicationModel.getEnvironment();
         try {
+            //
             CompositeConfiguration compositeConfiguration = env.getPrefixedConfiguration(this);
             // loop methods, get override value and set the new value back to method
             Method[] methods = getClass().getMethods();

@@ -32,6 +32,7 @@ import static com.alibaba.spring.util.AnnotatedBeanDefinitionRegistryUtils.regis
 import static org.apache.dubbo.config.spring.util.DubboBeanUtils.registerCommonBeans;
 
 /**
+ * dubbo config 注册
  * Dubbo {@link AbstractConfig Config} {@link ImportBeanDefinitionRegistrar register}, which order can be configured
  *
  * @see EnableDubboConfig
@@ -43,8 +44,14 @@ public class DubboConfigConfigurationRegistrar implements ImportBeanDefinitionRe
 
     private ConfigurableApplicationContext applicationContext;
 
+    /**
+     *  注册 BeanDefinition
+     * @param importingClassMetadata
+     * @param registry
+     */
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+
 
         AnnotationAttributes attributes = AnnotationAttributes.fromMap(
                 importingClassMetadata.getAnnotationAttributes(EnableDubboConfig.class.getName()));

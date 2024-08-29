@@ -51,21 +51,25 @@ public @interface DubboService {
     String interfaceName() default "";
 
     /**
+     * 版本号
      * Service version, default value is empty string
      */
     String version() default "";
 
     /**
+     * 组
      * Service group, default value is empty string
      */
     String group() default "";
 
     /**
+     * 路径
      * Service path, default value is empty string
      */
     String path() default "";
 
     /**
+     *  是否导出服务
      * Whether to export service, default value is true
      */
     boolean export() default true;

@@ -169,6 +169,7 @@ public class ServiceClassPostProcessor implements BeanDefinitionRegistryPostProc
             if (!CollectionUtils.isEmpty(beanDefinitionHolders)) {
 
                 for (BeanDefinitionHolder beanDefinitionHolder : beanDefinitionHolders) {
+                    //注册ServiceBean
                     registerServiceBean(beanDefinitionHolder, registry, scanner);
                 }
 

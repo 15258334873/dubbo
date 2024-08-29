@@ -33,6 +33,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 
 /**
+ * dubbo 类用来处理
  * ServiceFactoryBean
  *
  * @export
@@ -103,11 +104,14 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
 
     /**
      * @since 2.6.5
+     *
      */
     @Override
     public void exported() {
+        //
         super.exported();
         // Publish ServiceBeanExportedEvent
+        //
         publishExportEvent();
     }
 
